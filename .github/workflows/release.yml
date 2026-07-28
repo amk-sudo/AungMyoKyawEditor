@@ -14,21 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       
-      - name: Verify tag matches app versionName
-        if: github.ref_type == 'tag'
-        run: |
-          tag_version="${GITHUB_REF_NAME#v}"
-          app_version=$(sed -nE 's/.*versionName[[:space:]]*"([^"]+)".*/\1/p' app/build.gradle.kts | head -1)
-          if [ -z "$app_version" ]; then
-            echo "Could not parse versionName from app/build.gradle.kts" >&2
-            exit 1
-          fi
-          if [ "$tag_version" != "$app_version" ]; then
-            echo "Tag $GITHUB_REF_NAME (=> $tag_version) does not match app versionName ($app_version)" >&2
-            exit 1
-          fi
-          echo "Tag matches versionName: $app_version"
-      
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -44,25 +29,12 @@ jobs:
       - name: Build release APK
         run: ./gradlew assembleRelease
       
-      - name: Sign APK (Optional - uncomment if you have signing keys)
-        # uses: r0adkll/sign-android-release@v1
-        # id: sign
-        # env:
-        #   BUILD_TOOLS_VERSION: '34.0.0'
-        # with:
-        #   releaseDirectory: app/build/outputs/apk/release
-        #   signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-        #   alias: ${{ secrets.KEY_ALIAS }}
-        #   keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-        #   keyPassword: ${{ secrets.KEY_PASSWORD }}
-      
       - name: Rename APKs
         run: |
           mkdir -p release-artifacts
           for apk in app/build/outputs/apk/release/*.apk; do
             [ -f "$apk" ] || continue
             name=$(basename "$apk")
-            # Remove -unsigned if present, or just copy as-is
             if [[ "$name" == *"-unsigned"* ]]; then
               newname=$(echo "$name" | sed 's/-unsigned//')
               cp "$apk" "release-artifacts/AungMyoKyawEditor-${newname}"
