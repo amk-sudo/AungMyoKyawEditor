@@ -73,7 +73,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/black"
-        app:layout_constraintBottom_toTopOf="@id/timelineControls"
+        app:layout_constraintBottom_toTopOf="@id/toolsBar"
         app:layout_constraintTop_toBottomOf="@id/topBar">
 
         <com.google.android.exoplayer2.ui.StyledPlayerView
@@ -268,7 +268,7 @@
                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:src="@android:drawable/ic_lock_silentmode_off"
+                    android:src="@android:drawable/ic_lock_silent_mode_off"
                     android:tint="@color/inactiveTool" />
 
                 <TextView
