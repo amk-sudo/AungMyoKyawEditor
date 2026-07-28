@@ -183,7 +183,7 @@ class VideoEditingActivity : AppCompatActivity() {
         if (!isVideoLoaded) return
         val newPosition = (player.currentPosition + offsetMs).coerceIn(0, player.duration)
         player.seekTo(newPosition)
-        updateTimeDisplay()
+        updateDurationText()
     }
 
     private fun adjustVolume(delta: Float) {
