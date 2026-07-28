@@ -42,10 +42,9 @@ else
     which java >/dev/null 2>&1 || { echo "ERROR: JAVA_HOME is not set" >&2; exit 1; }
 fi
 
-DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
-
 exec "$JAVACMD" \
-    $DEFAULT_JVM_OPTS \
+    -Xmx64m \
+    -Xms64m \
     $JAVA_OPTS \
     $GRADLE_OPTS \
     "-Dorg.gradle.appname=$APP_BASE_NAME" \
