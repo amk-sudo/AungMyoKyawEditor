@@ -54,6 +54,8 @@ class VideoEditingActivity : AppCompatActivity() {
     private var frameExtractionJob: Job? = null
     private var isVideoLoaded = false
     private var videoDurationMs: Long = 0L
+    private var exportDialog: android.app.AlertDialog? = null
+    private var outputFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -402,7 +404,7 @@ class VideoEditingActivity : AppCompatActivity() {
         }
 
         viewModel.startExport()
-        binding.exportProgress.visibility = View.VISIBLE
+        showExportDialog()
 
         exportJob = lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -410,26 +412,26 @@ class VideoEditingActivity : AppCompatActivity() {
                     ?: File(filesDir, "exports")
                 outputDir.mkdirs()
 
-                val outputFile = File(outputDir, "export_${System.currentTimeMillis()}.mp4")
+                outputFile = File(outputDir, "export_${System.currentTimeMillis()}.mp4")
+
+                updateExportProgress(0, "Processing video...")
 
                 val result = ffmpegEngine.trimVideo(
                     sourceFilePath = tempInputFile.absolutePath,
                     startMs = 0,
                     endMs = videoDurationMs,
-                    outputFilePath = outputFile.absolutePath
+                    outputFilePath = outputFile!!.absolutePath
                 )
 
                 withContext(Dispatchers.Main) {
                     when (result) {
                         is FFmpegRenderEngine.RenderResult.Success -> {
                             viewModel.finishExport()
-                            Toast.makeText(this@VideoEditingActivity, "Export complete!", Toast.LENGTH_SHORT).show()
-                            binding.exportProgress.visibility = View.GONE
+                            showExportComplete()
                         }
                         is FFmpegRenderEngine.RenderResult.Failure -> {
                             viewModel.exportError(result.error)
-                            Toast.makeText(this@VideoEditingActivity, "Export failed", Toast.LENGTH_SHORT).show()
-                            binding.exportProgress.visibility = View.GONE
+                            showExportError(result.error)
                         }
                         else -> {}
                     }
@@ -438,10 +440,75 @@ class VideoEditingActivity : AppCompatActivity() {
                 Log.e(TAG, "Export error: ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     viewModel.exportError(e.message ?: "Export failed")
-                    binding.exportProgress.visibility = View.GONE
+                    showExportError(e.message ?: "Export failed")
                 }
             }
         }
+    }
+
+    private fun showExportDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_export, null)
+        exportDialog = android.app.AlertDialog.Builder(this)
+            .setTitle("Exporting Video")
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+        exportDialog?.show()
+    }
+
+    private fun updateExportProgress(progress: Int, status: String) {
+        runOnUiThread {
+            exportDialog?.let { dialog ->
+                val dialogView = dialog.findViewById<ProgressBar>(R.id.progressBar)
+                val tvProgress = dialogView?.rootView?.findViewById<android.widget.TextView>(R.id.tvProgress)
+                val tvStatus = dialogView?.rootView?.findViewById<android.widget.TextView>(R.id.tvStatus)
+                dialogView?.progress = progress
+                tvProgress?.text = "$progress%"
+                tvStatus?.text = status
+            }
+        }
+    }
+
+    private fun showExportComplete() {
+        exportDialog?.let { dialog ->
+            val dialogView = dialog.findViewById<ProgressBar>(R.id.progressBar)
+            val tvProgress = dialogView?.rootView?.findViewById<android.widget.TextView>(R.id.tvProgress)
+            val tvStatus = dialogView?.rootView?.findViewById<android.widget.TextView>(R.id.tvStatus)
+            val layoutComplete = dialogView?.rootView?.findViewById<LinearLayout>(R.id.layoutComplete)
+            val btnShare = dialogView?.rootView?.findViewById<Button>(R.id.btnShare)
+
+            dialog.setTitle("Export Complete!")
+            dialogView?.progress = 100
+            tvProgress?.text = "100%"
+            tvStatus?.text = "Video saved successfully"
+            layoutComplete?.visibility = View.VISIBLE
+
+            btnShare?.setOnClickListener {
+                outputFile?.let { file ->
+                    shareVideo(file)
+                }
+            }
+        }
+    }
+
+    private fun showExportError(error: String) {
+        exportDialog?.dismiss()
+        Toast.makeText(this, "Export failed: $error", Toast.LENGTH_LONG).show()
+    }
+
+    private fun shareVideo(file: File) {
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            this,
+            "${packageName}.fileprovider",
+            file
+        )
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "video/mp4"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(intent, "Share Video"))
+        exportDialog?.dismiss()
     }
 
     private fun showUnsavedChangesDialog() {
