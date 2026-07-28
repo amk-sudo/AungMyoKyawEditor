@@ -139,13 +139,57 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <!-- Volume Down -->
+        <ImageButton
+            android:id="@+id/btnVolumeDown"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Volume Down"
+            android:src="@android:drawable/ic_volume_low"
+            android:tint="@color/white" />
+
+        <!-- Rewind 5s -->
+        <ImageButton
+            android:id="@+id/btnRewind"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Rewind 5s"
+            android:src="@android:drawable/ic_media_rew"
+            android:tint="@color/white" />
+
+        <!-- Play/Pause -->
         <ImageButton
             android:id="@+id/btnPlayPause"
             android:layout_width="64dp"
             android:layout_height="64dp"
+            android:layout_marginHorizontal="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Play/Pause"
             android:src="@android:drawable/ic_media_play"
+            android:tint="@color/white" />
+
+        <!-- Forward 5s -->
+        <ImageButton
+            android:id="@+id/btnForward"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Forward 5s"
+            android:src="@android:drawable/ic_media_ff"
+            android:tint="@color/white" />
+
+        <!-- Volume Up -->
+        <ImageButton
+            android:id="@+id/btnVolumeUp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Volume Up"
+            android:src="@android:drawable/ic_volume_up"
             android:tint="@color/white" />
 
     </LinearLayout>

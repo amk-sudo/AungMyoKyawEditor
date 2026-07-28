@@ -106,6 +106,22 @@ class VideoEditingActivity : AppCompatActivity() {
             togglePlayPause()
         }
 
+        binding.btnRewind.setOnClickListener {
+            seekVideo(-5000) // Rewind 5 seconds
+        }
+
+        binding.btnForward.setOnClickListener {
+            seekVideo(5000) // Forward 5 seconds
+        }
+
+        binding.btnVolumeDown.setOnClickListener {
+            adjustVolume(-0.1f) // Decrease volume by 10%
+        }
+
+        binding.btnVolumeUp.setOnClickListener {
+            adjustVolume(0.1f) // Increase volume by 10%
+        }
+
         binding.btnUndo.setOnClickListener {
             viewModel.undo()
             refreshPreview()
@@ -161,6 +177,22 @@ class VideoEditingActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun seekVideo(offsetMs: Long) {
+        if (!isVideoLoaded) return
+        val newPosition = (player.currentPosition + offsetMs).coerceIn(0, player.duration)
+        player.seekTo(newPosition)
+        updateTimeDisplay()
+    }
+
+    private fun adjustVolume(delta: Float) {
+        if (!isVideoLoaded) return
+        val currentVolume = player.volume
+        val newVolume = (currentVolume + delta).coerceIn(0f, 1f)
+        player.volume = newVolume
+        val volumePercent = (newVolume * 100).toInt()
+        Toast.makeText(this, "Volume: $volumePercent%", Toast.LENGTH_SHORT).show()
     }
 
     private fun handleIntent() {

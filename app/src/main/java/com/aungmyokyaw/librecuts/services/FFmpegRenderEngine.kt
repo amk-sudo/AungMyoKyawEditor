@@ -20,7 +20,34 @@ class FFmpegRenderEngine(private val context: Context) {
     private val activeSessions = mutableListOf<FFmpegSession>()
     private val TAG = "FFmpegRenderEngine"
 
+    companion object {
+        private var cachedVersion: String? = null
+        
+        fun getVersion(): String {
+            if (cachedVersion != null) return cachedVersion!!
+            try {
+                val session = FFmpegKit.execute("-version")
+                val output = session.output ?: ""
+                cachedVersion = when {
+                    output.contains("ffmpeg version") -> {
+                        val regex = """ffmpeg version (\S+)""".toRegex()
+                        regex.find(output)?.groupValues?.getOrNull(1) ?: "Unknown"
+                    }
+                    output.contains("FFmpegKit") -> {
+                        val regex = """FFmpegKit/(\S+)""".toRegex()
+                        regex.find(output)?.groupValues?.getOrNull(1) ?: "FFmpegKit"
+                    }
+                    else -> "Unknown"
+                }
+            } catch (e: Exception) {
+                cachedVersion = "Error: ${e.message}"
+            }
+            return cachedVersion!!
+        }
+    }
+
     init {
+        Log.i(TAG, "FFmpeg Version: ${getVersion()}")
         // Set font directory for drawtext filter
         val fontDir = listOf(
             "/system/fonts",
@@ -120,12 +147,14 @@ class FFmpegRenderEngine(private val context: Context) {
                         return@withContext executeCommand(fallbackCommand)
                     }
 
-                    Log.e(TAG, "FFmpeg error: $failLog")
-                    RenderResult.Failure(error = failLog, session = session)
+                    val userFriendlyError = simplifyErrorMessage(failLog)
+                    Log.e(TAG, "FFmpeg error: $userFriendlyError")
+                    Log.e(TAG, "FFmpeg version: ${getVersion()}")
+                    RenderResult.Failure(error = "Export failed: $userFriendlyError\n\nFFmpeg: ${getVersion()}", session = session)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Exception during FFmpeg execution: ${e.message}", e)
-                RenderResult.Failure(error = e.message ?: "Unknown exception")
+                RenderResult.Failure(error = "Export error: ${e.message}\n\nFFmpeg: ${getVersion()}")
             }
         }
     }
@@ -329,5 +358,19 @@ class FFmpegRenderEngine(private val context: Context) {
         val quotedRegex = """"([^"]*)"\s*$""".toRegex()
         quotedRegex.find(command)?.groupValues?.get(1)?.let { return it }
         return command.trimEnd().split("\\s+".toRegex()).lastOrNull() ?: ""
+    }
+
+    private fun simplifyErrorMessage(error: String): String {
+        return when {
+            error.contains("No such file or directory") -> "File not found. Please check the video file."
+            error.contains("Invalid data found") -> "Invalid video file. The file may be corrupted."
+            error.contains("Unsupported codec") -> "Unsupported video format."
+            error.contains("Decoder (codec") -> "Cannot decode this video format."
+            error.contains("Encoder (codec") -> "Cannot encode this video format."
+            error.contains("Out of memory") -> "Not enough memory to process this video."
+            error.contains("Permission denied") -> "Permission denied. Cannot access file."
+            error.contains("Video size") -> "Invalid video dimensions."
+            else -> error.lines().firstOrNull()?.take(200) ?: "Unknown error"
+        }
     }
 }

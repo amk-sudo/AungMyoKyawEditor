@@ -18,4 +18,5 @@
     <color name="colorOnSurface">#FFFFFFFF</color>
     <color name="inactiveTool">#80FFFFFF</color>
     <color name="toolTextInactive">#80FFFFFF</color>
+    <color name="ic_launcher_background">#FF6200EE</color>
 </resources>
