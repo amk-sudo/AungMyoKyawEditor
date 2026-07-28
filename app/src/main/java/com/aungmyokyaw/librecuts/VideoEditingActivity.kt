@@ -254,6 +254,9 @@ class VideoEditingActivity : AppCompatActivity() {
         val tvEndTime = dialogView.findViewById<android.widget.TextView>(R.id.tvEndTime)!!
         val tvTotalTime = dialogView.findViewById<android.widget.TextView>(R.id.tvTotalTime)!!
 
+        val startBar = seekBarStart
+        val endBar = seekBarEnd
+
         seekBarStart.max = videoDurationMs.toInt()
         seekBarEnd.max = videoDurationMs.toInt()
         seekBarEnd.progress = videoDurationMs.toInt()
@@ -263,7 +266,7 @@ class VideoEditingActivity : AppCompatActivity() {
 
         seekBarStart.setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
-                if (progress >= seekBarEnd.progress) seekBar.progress = seekBarEnd.progress - 1000
+                if (progress >= endBar.progress) seekBar?.progress = endBar.progress - 1000
                 tvStartTime.text = formatTime(progress.toLong())
             }
             override fun onStartTrackingTouch(seekBar: android.widget.SeekBar?) {}
@@ -272,7 +275,7 @@ class VideoEditingActivity : AppCompatActivity() {
 
         seekBarEnd.setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
-                if (progress <= seekBarStart.progress) seekBar.progress = seekBarStart.progress + 1000
+                if (progress <= startBar.progress) seekBar?.progress = startBar.progress + 1000
                 tvEndTime.text = formatTime(progress.toLong())
             }
             override fun onStartTrackingTouch(seekBar: android.widget.SeekBar?) {}
@@ -283,8 +286,8 @@ class VideoEditingActivity : AppCompatActivity() {
             .setTitle("Trim Video")
             .setView(dialogView)
             .setPositiveButton("Apply") { _, _ ->
-                val startMs = seekBarStart.progress.toLong()
-                val endMs = seekBarEnd.progress.toLong()
+                val startMs = startBar.progress.toLong()
+                val endMs = endBar.progress.toLong()
                 viewModel.addOperation(EditOperation.Trim(startMs, endMs))
                 Toast.makeText(this, "Trim applied: ${formatTime(startMs)} - ${formatTime(endMs)}", Toast.LENGTH_SHORT).show()
             }
