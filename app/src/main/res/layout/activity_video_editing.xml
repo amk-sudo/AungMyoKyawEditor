@@ -303,6 +303,52 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/btnSrt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@android:drawable/ic_menu_sort_by_size"
+                    android:tint="@color/inactiveTool" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SRT"
+                    android:textColor="@color/inactiveTool"
+                    android:textSize="10sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnAudioFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@android:drawable/ic_media_play"
+                    android:tint="@color/inactiveTool" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MP3"
+                    android:textColor="@color/inactiveTool"
+                    android:textSize="10sp" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </HorizontalScrollView>

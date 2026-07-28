@@ -17,10 +17,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.aungmyokyaw.librecuts.databinding.ActivityVideoEditingBinding
+import com.aungmyokyaw.librecuts.models.EditOperation
+import com.aungmyokyaw.librecuts.models.TextPosition
 import com.aungmyokyaw.librecuts.models.VideoProject
 import com.aungmyokyaw.librecuts.services.FFmpegRenderEngine
 import com.aungmyokyaw.librecuts.viewmodels.VideoEditingViewModel
@@ -128,6 +132,22 @@ class VideoEditingActivity : AppCompatActivity() {
             showMergeDialog()
         }
 
+        binding.btnAudio.setOnClickListener {
+            showAudioDialog()
+        }
+
+        binding.btnFilters.setOnClickListener {
+            showFiltersDialog()
+        }
+
+        binding.btnSrt.setOnClickListener {
+            showSrtFilePicker()
+        }
+
+        binding.btnAudioFile.setOnClickListener {
+            showAudioFilePicker()
+        }
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (viewModel.hasUnsavedEdits.value) {
@@ -223,20 +243,156 @@ class VideoEditingActivity : AppCompatActivity() {
     }
 
     private fun showTrimDialog() {
-        // Simplified trim - would open a trim UI
-        Toast.makeText(this, "Trim feature", Toast.LENGTH_SHORT).show()
+        val dialogView = layoutInflater.inflate(R.layout.dialog_trim, null)
+        val seekBarStart = dialogView.findViewById<android.widget.SeekBar>(R.id.seekBarStart)
+        val seekBarEnd = dialogView.findViewById<android.widget.SeekBar>(R.id.seekBarEnd)
+        val tvStartTime = dialogView.findViewById<android.widget.TextView>(R.id.tvStartTime)
+        val tvEndTime = dialogView.findViewById<android.widget.TextView>(R.id.tvEndTime)
+        val tvTotalTime = dialogView.findViewById<android.widget.TextView>(R.id.tvTotalTime)
+
+        seekBarStart.max = videoDurationMs.toInt()
+        seekBarEnd.max = videoDurationMs.toInt()
+        seekBarEnd.progress = videoDurationMs.toInt()
+        tvTotalTime.text = formatTime(videoDurationMs)
+        tvStartTime.text = formatTime(0)
+        tvEndTime.text = formatTime(videoDurationMs)
+
+        seekBarStart.setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
+                if (progress >= seekBarEnd.progress) seekBar.progress = seekBarEnd.progress - 1000
+                tvStartTime.text = formatTime(progress.toLong())
+            }
+            override fun onStartTrackingTouch(seekBar: android.widget.SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: android.widget.SeekBar?) {}
+        })
+
+        seekBarEnd.setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
+                if (progress <= seekBarStart.progress) seekBar.progress = seekBarStart.progress + 1000
+                tvEndTime.text = formatTime(progress.toLong())
+            }
+            override fun onStartTrackingTouch(seekBar: android.widget.SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: android.widget.SeekBar?) {}
+        })
+
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Trim Video")
+            .setView(dialogView)
+            .setPositiveButton("Apply") { _, _ ->
+                val startMs = seekBarStart.progress.toLong()
+                val endMs = seekBarEnd.progress.toLong()
+                viewModel.addOperation(EditOperation.Trim(startMs, endMs))
+                Toast.makeText(this, "Trim applied: ${formatTime(startMs)} - ${formatTime(endMs)}", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun showSpeedDialog() {
-        Toast.makeText(this, "Speed feature", Toast.LENGTH_SHORT).show()
+        val speeds = arrayOf("0.25x", "0.5x", "0.75x", "1.0x", "1.25x", "1.5x", "2.0x", "4.0x")
+        val speedValues = floatArrayOf(0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f, 4.0f)
+
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Video Speed")
+            .setItems(speeds) { _, which ->
+                viewModel.addOperation(EditOperation.SpeedMain(speedValues[which]))
+                Toast.makeText(this, "Speed set to ${speeds[which]}", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun showTextDialog() {
-        Toast.makeText(this, "Add text feature", Toast.LENGTH_SHORT).show()
+        val dialogView = layoutInflater.inflate(R.layout.dialog_text, null)
+        val etText = dialogView.findViewById<android.widget.EditText>(R.id.etText)
+        val etFontSize = dialogView.findViewById<android.widget.EditText>(R.id.etFontSize)
+        val spinnerPosition = dialogView.findViewById<android.widget.Spinner>(R.id.spinnerPosition)
+        val colors = arrayOf("White", "Red", "Green", "Blue", "Yellow", "Black")
+        val colorValues = arrayOf("#FFFFFF", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#000000")
+
+        etFontSize.setText("48")
+        val adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, TextPosition.labels())
+        spinnerPosition.adapter = adapter
+
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Add Text Overlay")
+            .setView(dialogView)
+            .setPositiveButton("Add") { _, _ ->
+                val text = etText.text.toString()
+                val fontSize = etFontSize.text.toString().toIntOrNull() ?: 48
+                val position = TextPosition.fromLabel(spinnerPosition.selectedItem.toString())
+                if (text.isNotEmpty()) {
+                    viewModel.addOperation(EditOperation.AddText(text, fontSize, position))
+                    Toast.makeText(this, "Text added: $text", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun showMergeDialog() {
-        Toast.makeText(this, "Merge videos feature", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Select videos to merge", Toast.LENGTH_SHORT).show()
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            type = "video/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        startActivityForResult(intent, REQUEST_MERGE_VIDEOS)
+    }
+
+    private fun showAudioDialog() {
+        val options = arrayOf("Mute Audio", "Extract Audio", "Replace Audio")
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Audio Options")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        viewModel.addOperation(EditOperation.MuteAudio())
+                        Toast.makeText(this, "Audio muted", Toast.LENGTH_SHORT).show()
+                    }
+                    1 -> Toast.makeText(this, "Extract audio feature", Toast.LENGTH_SHORT).show()
+                    2 -> Toast.makeText(this, "Replace audio feature", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showFiltersDialog() {
+        val filters = arrayOf("None", "Sepia", "Grayscale", "Blur", "Brightness+", "Contrast+", "Vintage", "Warm")
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Video Filters")
+            .setItems(filters) { _, which ->
+                val filterName = if (which == 0) "null" else filters[which].lowercase()
+                viewModel.addOperation(EditOperation.ColorFilter(0, filterName))
+                Toast.makeText(this, "Filter applied: ${filters[which]}", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showSrtFilePicker() {
+        Toast.makeText(this, "Select SRT subtitle file", Toast.LENGTH_SHORT).show()
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            type = "application/x-subrip"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        startActivityForResult(intent, REQUEST_SRT_FILE)
+    }
+
+    private fun showAudioFilePicker() {
+        Toast.makeText(this, "Select MP3 audio file", Toast.LENGTH_SHORT).show()
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            type = "audio/*"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        startActivityForResult(intent, REQUEST_AUDIO_FILE)
+    }
+
+    private fun formatTime(ms: Long): String {
+        val seconds = (ms / 1000) % 60
+        val minutes = (ms / (1000 * 60)) % 60
+        return String.format("%02d:%02d", minutes, seconds)
     }
 
     private fun startExport() {
@@ -313,6 +469,38 @@ class VideoEditingActivity : AppCompatActivity() {
         return name
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != RESULT_OK || data == null) return
+
+        when (requestCode) {
+            REQUEST_SRT_FILE -> {
+                data.data?.let { uri ->
+                    try {
+                        val srtContent = contentResolver.openInputStream(uri)?.bufferedReader()?.readText() ?: ""
+                        val fileName = getFileName(uri)
+                        viewModel.addOperation(EditOperation.AddSubtitles(uri, srtContent, fileName, emptyList()))
+                        Toast.makeText(this, "Subtitles added: $fileName", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "Failed to load subtitles", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            REQUEST_AUDIO_FILE -> {
+                data.data?.let { uri ->
+                    val fileName = getFileName(uri)
+                    viewModel.addOperation(EditOperation.AddBackgroundAudio(uri, false, 1.0f))
+                    Toast.makeText(this, "Audio added: $fileName", Toast.LENGTH_SHORT).show()
+                }
+            }
+            REQUEST_MERGE_VIDEOS -> {
+                // Handle merge videos
+                Toast.makeText(this, "Videos selected for merge", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         player.release()
@@ -326,5 +514,8 @@ class VideoEditingActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "VideoEditingActivity"
+        private const val REQUEST_MERGE_VIDEOS = 1001
+        private const val REQUEST_SRT_FILE = 1002
+        private const val REQUEST_AUDIO_FILE = 1003
     }
 }
