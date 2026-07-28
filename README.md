@@ -1,12 +1,19 @@
 # Aung Myo Kyaw Editor
 
 <div align="center">
-  <img src="src/images/featureGraphic.png" alt="Aung Myo Kyaw Editor Banner" width="100%"/>
+  <img src="app/src/main/res/drawable/ic_launcher.png" alt="Aung Myo Kyaw Editor Icon" width="150"/>
+  <br/>
+  <br/>
+
+  **Aung Myo Kyaw Editor** - Professional Video Editor for Android
   <br/>
   <br/>
 
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" height="35" alt="License" />
+  </a>
+  <a href="https://github.com/amk-sudo/AungMyoKyawEditor/releases">
+    <img src="https://img.shields.io/badge/Download-APK-green.svg?style=for-the-badge" height="35" alt="Download APK" />
   </a>
 </div>
 
@@ -18,32 +25,40 @@
 
 ## 🚀 Features
 
-- **Trim** - Remove unwanted parts from the beginning or end of a video clip.
-- **Speed** - Change the speed of video clips.
-- **Text Overlay** - Add customizable text to videos.
-- **Merge** - Combine multiple video clips.
-- **Audio** - Manage soundtracks and add background music.
-- **Filters** - Apply color filters and adjustments.
-- **Hardware Acceleration** - Fast video exports using device hardware.
-- **No Watermark** - Export videos without any watermark.
+### Video Editing Tools
+| Feature | Description |
+|---------|-------------|
+| **Trim** | Cut and trim video clips with precision timeline editor |
+| **Speed** | Adjust video speed (0.25x to 4x) for slow-mo or fast-forward effects |
+| **Text Overlay** | Add custom text with position control and adjustable font size |
+| **Merge** | Combine multiple video clips into one seamless video |
+| **Audio** | Mute, extract, or replace audio tracks |
+| **Filters** | Apply visual effects: Sepia, Grayscale, Blur, Brightness, Contrast, Vintage, Warm |
+
+### Advanced Features
+| Feature | Description |
+|---------|-------------|
+| **SRT Subtitles** | Load and display subtitle files (.srt) |
+| **MP3 Audio** | Add background music from MP3 files |
+| **Export Progress** | Real-time export progress with share functionality |
+| **Hardware Acceleration** | Fast video exports using device hardware |
+| **No Watermark** | Export videos without any watermark |
+
+---
 
 ## 📱 Screenshots
 
-<div align="center">
-  <table>
-    <tr>
-      <td align="center"><b>Home Screen</b></td>
-      <td align="center"><b>Editor Screen</b></td>
-    </tr>
-  </table>
-</div>
+> _Screenshots coming soon_
+
+---
 
 ## 🛠️ Getting Started
 
 ### Prerequisites
 
-- Android Studio
-- Android SDK
+- Android Studio Hedgehog (2023.1.1) or newer
+- Android SDK 34 (Android 14)
+- JDK 17
 
 ### Installation
 
@@ -51,25 +66,61 @@
    ```bash
    git clone https://github.com/amk-sudo/AungMyoKyawEditor.git
    ```
-2. **Open the project in Android Studio**:
-   - Launch Android Studio and select "Open an existing Android Studio project."
-   - Navigate to the cloned directory and select it.
-3. **Build the project**:
-   - Click on "Build" in the menu, then select "Make Project."
-4. **Run the app**:
-   - Connect an Android device or start an emulator.
-   - Click on the "Run" button in Android Studio.
+
+2. **Open in Android Studio**:
+   - Launch Android Studio → Open an existing project
+   - Select the cloned directory
+
+3. **Build and Run**:
+   ```bash
+   ./gradlew assembleDebug
+   ```
+
+4. **Install APK**:
+   ```bash
+   adb install app/build/outputs/apk/debug/app-debug.apk
+   ```
+
+### Download Release APK
+
+Get the latest release from [GitHub Releases](https://github.com/amk-sudo/AungMyoKyawEditor/releases)
+
+---
+
+## 📂 Project Structure
+
+```
+AungMyoKyawEditor/
+├── app/src/main/
+│   ├── java/com/aungmyokyaw/librecuts/
+│   │   ├── models/          # Data models
+│   │   ├── services/        # FFmpeg rendering engine
+│   │   ├── viewmodels/      # ViewModels for MVVM
+│   │   └── VideoEditingActivity.kt
+│   └── res/
+│       ├── layout/          # XML layouts
+│       └── values/          # Colors, strings, themes
+└── build.gradle.kts
+```
+
+---
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you have suggestions or improvements, feel free to create a pull request or open an issue.
+Contributions are welcome!
 
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Commit your changes.
-4. Push to the branch.
-5. Submit a pull request.
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/your-feature`
+3. Commit changes: `git commit -m 'Add new feature'`
+4. Push to branch: `git push origin feature/your-feature`
+5. Open a Pull Request
+
+---
 
 ## 📝 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+**Made with ❤️ for video creators**
