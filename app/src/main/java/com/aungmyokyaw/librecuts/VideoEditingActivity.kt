@@ -248,11 +248,11 @@ class VideoEditingActivity : AppCompatActivity() {
 
     private fun showTrimDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_trim, null)
-        val seekBarStart = dialogView.findViewById<android.widget.SeekBar>(R.id.seekBarStart)
-        val seekBarEnd = dialogView.findViewById<android.widget.SeekBar>(R.id.seekBarEnd)
-        val tvStartTime = dialogView.findViewById<android.widget.TextView>(R.id.tvStartTime)
-        val tvEndTime = dialogView.findViewById<android.widget.TextView>(R.id.tvEndTime)
-        val tvTotalTime = dialogView.findViewById<android.widget.TextView>(R.id.tvTotalTime)
+        val seekBarStart = dialogView.findViewById<android.widget.SeekBar>(R.id.seekBarStart)!!
+        val seekBarEnd = dialogView.findViewById<android.widget.SeekBar>(R.id.seekBarEnd)!!
+        val tvStartTime = dialogView.findViewById<android.widget.TextView>(R.id.tvStartTime)!!
+        val tvEndTime = dialogView.findViewById<android.widget.TextView>(R.id.tvEndTime)!!
+        val tvTotalTime = dialogView.findViewById<android.widget.TextView>(R.id.tvTotalTime)!!
 
         seekBarStart.max = videoDurationMs.toInt()
         seekBarEnd.max = videoDurationMs.toInt()
@@ -308,11 +308,9 @@ class VideoEditingActivity : AppCompatActivity() {
 
     private fun showTextDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_text, null)
-        val etText = dialogView.findViewById<android.widget.EditText>(R.id.etText)
-        val etFontSize = dialogView.findViewById<android.widget.EditText>(R.id.etFontSize)
-        val spinnerPosition = dialogView.findViewById<android.widget.Spinner>(R.id.spinnerPosition)
-        val colors = arrayOf("White", "Red", "Green", "Blue", "Yellow", "Black")
-        val colorValues = arrayOf("#FFFFFF", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#000000")
+        val etText = dialogView.findViewById<android.widget.EditText>(R.id.etText)!!
+        val etFontSize = dialogView.findViewById<android.widget.EditText>(R.id.etFontSize)!!
+        val spinnerPosition = dialogView.findViewById<android.widget.Spinner>(R.id.spinnerPosition)!!
 
         etFontSize.setText("48")
         val adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, TextPosition.labels())
@@ -391,12 +389,6 @@ class VideoEditingActivity : AppCompatActivity() {
             addCategory(Intent.CATEGORY_OPENABLE)
         }
         startActivityForResult(intent, REQUEST_AUDIO_FILE)
-    }
-
-    private fun formatTime(ms: Long): String {
-        val seconds = (ms / 1000) % 60
-        val minutes = (ms / (1000 * 60)) % 60
-        return String.format("%02d:%02d", minutes, seconds)
     }
 
     private fun startExport() {
