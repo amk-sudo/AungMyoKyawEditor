@@ -26,26 +26,16 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
       
-      - name: Build release APK
-        run: ./gradlew assembleRelease
+      - name: Build debug APK
+        run: ./gradlew assembleDebug
       
       - name: Rename APKs
         run: |
           mkdir -p release-artifacts
-          for apk in app/build/outputs/apk/release/*.apk; do
-            [ -f "$apk" ] || continue
-            name=$(basename "$apk")
-            if [[ "$name" == *"-unsigned"* ]]; then
-              newname=$(echo "$name" | sed 's/-unsigned//')
-              cp "$apk" "release-artifacts/AungMyoKyawEditor-${newname}"
-            else
-              cp "$apk" "release-artifacts/AungMyoKyawEditor-${name#app-}"
-            fi
-          done
-          # Also include debug APKs as fallback
           for apk in app/build/outputs/apk/debug/*.apk; do
             [ -f "$apk" ] || continue
-            cp "$apk" "release-artifacts/"
+            name=$(basename "$apk")
+            cp "$apk" "release-artifacts/AungMyoKyawEditor-${name#app-}"
           done
           ls -lh release-artifacts/
       
