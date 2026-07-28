@@ -66,7 +66,7 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
 
     // FFmpeg for video processing
-    implementation("com.arthenica:ffmpeg-kit-full:6.0-2")
+    implementation("com.arthenica:ffmpeg-kit-full-gpl:6.0-2")
 
     // Lottie for animations
     implementation("com.airbnb.android:lottie:6.3.0")
