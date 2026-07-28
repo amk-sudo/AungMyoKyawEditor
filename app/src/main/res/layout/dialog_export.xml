@@ -4,25 +4,29 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="32dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="@color/colorSurface">
 
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="16dp"
         android:indeterminate="false"
         android:max="100"
-        android:progress="0" />
+        android:progress="0"
+        android:progressTint="@color/colorPrimary"
+        android:progressBackgroundTint="@color/colorBackground" />
 
     <TextView
         android:id="@+id/tvProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0%"
-        android:textSize="18sp"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:layout_marginTop="16dp" />
+        android:textColor="@color/white"
+        android:layout_marginTop="20dp" />
 
     <TextView
         android:id="@+id/tvStatus"
@@ -30,6 +34,7 @@
         android:layout_height="wrap_content"
         android:text="Preparing..."
         android:textSize="14sp"
+        android:textColor="@color/inactiveTool"
         android:layout_marginTop="8dp" />
 
     <LinearLayout
@@ -41,8 +46,8 @@
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:src="@android:drawable/ic_menu_send"
             android:tint="@color/colorPrimary" />
 
@@ -50,17 +55,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Export Complete!"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/colorPrimary"
             android:layout_marginTop="16dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Share"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            app:backgroundTint="@color/colorPrimary" />
 
     </LinearLayout>
 
