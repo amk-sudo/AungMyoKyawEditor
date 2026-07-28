@@ -151,8 +151,8 @@
             android:background="@drawable/circle_btn_background"
             android:contentDescription="Volume Down"
             android:padding="10dp"
-            android:src="@android:drawable/ic_volume_low"
-            android:tint="@color/white" />
+            android:src="@drawable/ic_volume_down"
+            app:tint="@color/white" />
 
         <!-- Rewind 5s -->
         <ImageButton
@@ -198,8 +198,8 @@
             android:background="@drawable/circle_btn_background"
             android:contentDescription="Volume Up"
             android:padding="10dp"
-            android:src="@android:drawable/ic_volume_up"
-            android:tint="@color/white" />
+            android:src="@drawable/ic_volume_up"
+            app:tint="@color/white" />
 
     </LinearLayout>
 
