@@ -11,9 +11,11 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -459,10 +461,11 @@ class VideoEditingActivity : AppCompatActivity() {
     private fun updateExportProgress(progress: Int, status: String) {
         runOnUiThread {
             exportDialog?.let { dialog ->
-                val dialogView = dialog.findViewById<ProgressBar>(R.id.progressBar)
-                val tvProgress = dialogView?.rootView?.findViewById<android.widget.TextView>(R.id.tvProgress)
-                val tvStatus = dialogView?.rootView?.findViewById<android.widget.TextView>(R.id.tvStatus)
-                dialogView?.progress = progress
+                val dialogView = dialog.window?.decorView
+                val progressBar = dialogView?.findViewById<ProgressBar>(R.id.progressBar)
+                val tvProgress = dialogView?.findViewById<android.widget.TextView>(R.id.tvProgress)
+                val tvStatus = dialogView?.findViewById<android.widget.TextView>(R.id.tvStatus)
+                progressBar?.progress = progress
                 tvProgress?.text = "$progress%"
                 tvStatus?.text = status
             }
@@ -471,14 +474,15 @@ class VideoEditingActivity : AppCompatActivity() {
 
     private fun showExportComplete() {
         exportDialog?.let { dialog ->
-            val dialogView = dialog.findViewById<ProgressBar>(R.id.progressBar)
-            val tvProgress = dialogView?.rootView?.findViewById<android.widget.TextView>(R.id.tvProgress)
-            val tvStatus = dialogView?.rootView?.findViewById<android.widget.TextView>(R.id.tvStatus)
-            val layoutComplete = dialogView?.rootView?.findViewById<LinearLayout>(R.id.layoutComplete)
-            val btnShare = dialogView?.rootView?.findViewById<Button>(R.id.btnShare)
+            val dialogView = dialog.window?.decorView
+            val progressBar = dialogView?.findViewById<ProgressBar>(R.id.progressBar)
+            val tvProgress = dialogView?.findViewById<android.widget.TextView>(R.id.tvProgress)
+            val tvStatus = dialogView?.findViewById<android.widget.TextView>(R.id.tvStatus)
+            val layoutComplete = dialogView?.findViewById<LinearLayout>(R.id.layoutComplete)
+            val btnShare = dialogView?.findViewById<Button>(R.id.btnShare)
 
             dialog.setTitle("Export Complete!")
-            dialogView?.progress = 100
+            progressBar?.progress = 100
             tvProgress?.text = "100%"
             tvStatus?.text = "Video saved successfully"
             layoutComplete?.visibility = View.VISIBLE
