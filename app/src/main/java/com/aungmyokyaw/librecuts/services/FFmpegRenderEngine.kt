@@ -3,11 +3,11 @@ package com.aungmyokyaw.librecuts.services
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.arthenica.ffmpegkit.FFmpegKit
-import com.arthenica.ffmpegkit.FFmpegKitConfig
-import com.arthenica.ffmpegkit.FFmpegSession
-import com.arthenica.ffmpegkit.Level
-import com.arthenica.ffmpegkit.ReturnCode
+import com.antonkarpenko.ffmpegkit.FFmpegKit
+import com.antonkarpenko.ffmpegkit.FFmpegKitConfig
+import com.antonkarpenko.ffmpegkit.FFmpegSession
+import com.antonkarpenko.ffmpegkit.Level
+import com.antonkarpenko.ffmpegkit.ReturnCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File

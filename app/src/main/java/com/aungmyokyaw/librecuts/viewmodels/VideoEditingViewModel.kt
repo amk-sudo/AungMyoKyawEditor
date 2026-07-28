@@ -169,7 +169,7 @@ class VideoEditingViewModel : ViewModel() {
             _project.update { current ->
                 if (current == null) return@update null
                 val ops = current.operations.toMutableList()
-                val index = ops.indexOfFirst { it.id == operation.id }
+                val index = ops.indexOfFirst { it.operationId == operation.operationId }
                 if (index != -1) {
                     ops[index] = operation
                 }
@@ -182,7 +182,7 @@ class VideoEditingViewModel : ViewModel() {
         viewModelScope.launch {
             _project.update { current ->
                 if (current == null) return@update null
-                val ops = current.operations.filterNot { it.id == operationId }
+                val ops = current.operations.filterNot { it.operationId == operationId }
                 current.copy(operations = ops)
             }
             updateUiState { it.copy(pendingOperationCount = _project.value?.getOperationCount() ?: 0) }

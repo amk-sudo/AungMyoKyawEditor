@@ -327,23 +327,23 @@ enum class TextPosition(val ffmpegParam: String) : Serializable {
     }
 }
 
-val EditOperation.id: String
+val EditOperation.operationId: String
     get() = when (this) {
-        is EditOperation.Trim -> id
-        is EditOperation.SpeedMain -> id
-        is EditOperation.ReverseMain -> id
-        is EditOperation.MirrorMain -> id
-        is EditOperation.MaskMain -> id
-        is EditOperation.Crop -> id
-        is EditOperation.AddText -> id
-        is EditOperation.Merge -> id
-        is EditOperation.MuteAudio -> id
-        is EditOperation.Transition -> id
-        is EditOperation.MuteClip -> id
-        is EditOperation.ColorFilter -> id
-        is EditOperation.AddBackgroundAudio -> id
-        is EditOperation.AddImageOverlay -> id
-        is EditOperation.AddSubtitles -> id
-        is EditOperation.Adjust -> id
-        is EditOperation.CanvasBackground -> id
+        is EditOperation.Trim -> this.id
+        is EditOperation.SpeedMain -> this.id
+        is EditOperation.ReverseMain -> this.id
+        is EditOperation.MirrorMain -> this.id
+        is EditOperation.MaskMain -> this.id
+        is EditOperation.Crop -> this.id
+        is EditOperation.AddText -> this.id
+        is EditOperation.Merge -> this.id
+        is EditOperation.MuteAudio -> this.id
+        is EditOperation.Transition -> this.id
+        is EditOperation.MuteClip -> this.id
+        is EditOperation.ColorFilter -> this.id
+        is EditOperation.AddBackgroundAudio -> this.id
+        is EditOperation.AddImageOverlay -> this.id
+        is EditOperation.AddSubtitles -> this.id
+        is EditOperation.Adjust -> this.id
+        is EditOperation.CanvasBackground -> this.id
     }
